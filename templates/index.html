@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="https://d3js.org/topojson.v1.min.js"></script>
+  <script src="/static/map.js"></script>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .widget {
+      z-index: 9999;
+      position: absolute;
+      padding: 6px 8px;
+      background-color: rgba(225,225,225,0.8);
+      min-width: 100px;
+    }
+    .widget-title {
+      font-weight: bold;
+      padding-bottom: 2px;
+    }
+    .widget-item {
+      font-size: 7pt;
+      text-transform: uppercase;
+    }
+
+    .zip-label {
+      right: 25px; bottom: 25px;
+    }
+    .layer-filter {
+      right: 25px; top: 25px;
+    }
+    .zoom-box {
+      left: 25px; bottom: 25px;
+      min-width: 0px; padding: 0px;
+    }
+    .data-button {
+      padding: 4px;
+      margin: 2px 0px;
+    }
+    .data-button:hover, .data-button.selected {
+      background-color: rgba(250,250,250,1);
+    }
+    .zoom-button {
+      height: 25px; width: 25px;
+      text-align: center;
+      color: #555;
+      line-height: 25px;
+      font-weight: bold;
+    }
+    .zoom-button:hover {
+      color: #000;
+      cursor: pointer;
+    }
+    .zoom-button.disabled {
+      color: #AAA;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget zoom-box">
+    <div class="zoom-button" data-zoom="+">+</div>
+    <div class="zoom-button" data-zoom="-">–</div>
+  </div>
+  <div class="widget zip-label">
+    <div id="zip-name" class="widget-title">10001</div>
+    <div id="zip-place" class="widget-item">New York, NY</div>
+  </div>
+  <div class="widget layer-filter">
+    <div class="widget-title">Layers</div>
+    <div class="widget-item"><input type="checkbox" data-layer-toggle="legs" checked /> Commutes</div>
+    <div class="widget-item"><input type="checkbox" data-layer-toggle="zips" checked /> Zip Code Data</div>
+    <hr />
+    <div class="widget-title">Zip Data Sets</div>
+    <div class="widget-item data-button selected" data-element="lookup:COUNTY">ZIP County</div>
+    <div class="widget-item data-button" data-element="lookup:ZCTA5:3">ZIP Prefix (3)</div>
+    <div class="widget-item data-button" data-element="means_car">% Driving</div>
+    <div class="widget-item data-button" data-element="means_transit">% using Transit</div>
+    <div class="widget-item data-button" data-element="means_walk">% Walking</div>
+    <div class="widget-item data-button" data-element="travel_time">Average Commute</div>
+    <div class="widget-item data-button" data-element="emp">Employment</div>
+    <div class="widget-item data-button" data-element="workers">Population</div>
+    <hr />
+    <div class="widget-title">Commutes</div>
+    <div class="widget-item data-button" data-work-zip="10036">10036</div>
+  </div>
+  <script>
+    initializeMap();
+    d3.json("/static/zip_map.json", function (data) {
+      drawMap(data);
+    });
+    
+    $("input[type='checkbox']").change(function () {
+      $("." + $(this).data('layer-toggle') + "-layer").toggle(this.checked);
+    });
+    
+    $(".data-button").click(function () {
+      $(".data-button").removeClass("selected");
+      $(this).addClass("selected");
+      addData($(this).data("element"), $(this).data("work-zip"));
+    });
+    $(".zoom-button").click(function () {
+      if (!$(this).hasClass("disabled")) {
+        zoomInOut($(this).data("zoom"));
+      }
+    });
+  </script>
+</body>
