@@ -74,7 +74,7 @@ LINE_COLORS = {
 
 KEEP_LINES = ["LIRR", "Metro-North", "Subway", "NJ Transit", "PATH"]
 
-MEANS_COLORS = {
+MODE_COLORS = {
     'FERRY': '#6FBBEE',
     'HEAVY_RAIL': '#1B3F67',
     'TRAM': '#0039A6',

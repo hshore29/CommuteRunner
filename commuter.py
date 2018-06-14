@@ -158,6 +158,7 @@ def parse_directions(api_response):
             transit['agency'] = AGENCY_MAPPING.get(transit['full_agency'])
 
             # Line Color
+            transit['mode_color'] = MODE_COLORS.get(transit['transit_type'])
             transit['agency_color'] = AGENCY_COLORS.get(transit['agency'])
             line_color = t['line'].get('color')
             if transit['agency'] not in KEEP_LINES:
