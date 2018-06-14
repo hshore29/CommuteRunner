@@ -85,14 +85,8 @@ def parse_directions(api_response):
     # Did we find routes?
     if not route:
         return {
-            'status': 'ERROR',
+            'status': 'NO_ROUTES',
             'description': 'No routes found',
-            'overview': {'duration': None}
-            }
-    elif route[0]['legs'][0]['distance']['value'] == 0:
-        return {
-            'status': 'ERROR',
-            'description': 'Same source and dest zips',
             'overview': {'duration': None}
             }
     else:
@@ -184,7 +178,13 @@ def parse_directions(api_response):
             'polyline': data['overview']['polyline'],
             'startend': data['overview']['startend'],
             'description': '',
-            }]                
+            }]
+
+    # If the commute is zero duration, it's the same start & end zip
+    # Remove the steps and override the duration to 7 minutes
+    if data['overview']['duration'] == 0:
+        data['steps'] = list()
+        data['overview']['duration'] = (7 * 60)
 
     return data
 
