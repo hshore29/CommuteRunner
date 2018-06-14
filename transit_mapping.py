@@ -22,12 +22,12 @@ AGENCY_MAPPING = {
     "NJ TRANSIT BUS": 'NJ Transit Bus',
     "NJ TRANSIT RAIL": 'NJ Transit',
     "Norwalk Transit District": 'Other Bus',
-    "NY Waterway": 'NY Waterway',
+    "NY Waterway": 'Ferry',
     "OurBus": 'Charter Bus',
     "Peter Pan Bonanza Division": 'Charter Bus',
     "Peter Pan Bus Lines": 'Charter Bus',
     "Port Authority Trans-Hudson Corporation": 'PATH',
-    "Seastreak": 'Other Ferry',
+    "Seastreak": 'Ferry',
     "SEPTA": 'SEPTA',
     "Somerset County": 'Other Bus',
     "Sussex County Skylands Ride": 'Other Bus',
@@ -44,10 +44,9 @@ AGENCY_COLORS = {
     'NJ Transit': '#2C4885',
     'NJ Transit Bus': '#A32684',
     #'NJ Transit Alt': '#E86C34',
-    'NY Waterway': '#144CAF',
-    'NYCT Subway': '#0039A6',
+    'Subway': '#0039A6',
     'Other Bus': '#999',
-    'Other Ferry': '#6FBBEE',
+    'Ferry': '#6FBBEE',
     'PATH': '#2366AC',
     'SEPTA': '#E34528',
     }
@@ -72,8 +71,6 @@ LINE_COLORS = {
         },
     }
 
-KEEP_LINES = ["LIRR", "Metro-North", "Subway", "NJ Transit", "PATH"]
-
 MODE_COLORS = {
     'FERRY': '#6FBBEE',
     'HEAVY_RAIL': '#1B3F67',
@@ -83,3 +80,6 @@ MODE_COLORS = {
     'WALKING': '#AAA',
     'DRIVING': '#666',
     }
+
+KEEP_LINES = ["LIRR", "Metro-North", "Subway", "NJ Transit", "PATH"]
+LOW_DETAIL = ["Bieber Tourways", "Greyhound", "OurBus"]

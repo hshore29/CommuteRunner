@@ -201,6 +201,13 @@ def parse_directions(api_response):
         data['steps'] = list()
         data['overview']['duration'] = (7 * 60)
 
+    # If the commute includes a transit agency without detailed routes,
+    # remove the steps (but keep summary stats)
+    # These render as straight lines from stop to stop on the map
+    if any(s['transit']['full_agency'] in LOW_DETAIL
+           for s in data['steps'] if 'transit' in s):
+        data['steps'] = list()
+
     return data
 
 def get_directions(work_zip):
