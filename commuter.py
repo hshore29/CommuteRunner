@@ -5,6 +5,7 @@ import sqlite3
 import json
 
 from google_apis import API_KEY
+from transit_mapping import *
 MAPS_URL = 'https://maps.googleapis.com/maps/api/directions/json'
 
 # API Allowed inputs
@@ -148,13 +149,26 @@ def parse_directions(api_response):
             # Line Info
             transit['line_name'] = t['line'].get('name')
             transit['line_short_name'] = t['line'].get('short_name')
-            transit['color'] = t['line'].get('color', '#000')
-            transit['text_color'] = t['line'].get('text_color', '#000')
             transit['transit_type'] = t['line']['vehicle']['type']
 
             # Agency Info
+            transit['full_agency'] = None
             if 'agencies' in t['line']:
-                transit['agency'] = t['line']['agencies'][0]['name']
+                transit['full_agency'] = t['line']['agencies'][0]['name']
+            transit['agency'] = AGENCY_MAPPING.get(transit['full_agency'])
+
+            # Line Color
+            transit['agency_color'] = AGENCY_COLORS.get(transit['agency'])
+            line_color = t['line'].get('color')
+            if transit['agency'] not in KEEP_LINES:
+                line_color = transit['agency_color']
+            if line_color is None:
+                if transit['agency'] in LINE_COLORS:
+                    line = transit['line_short_name'] or transit['line_name']
+                    line_color = LINE_COLORS[transit['agency']].get(line)
+                else:
+                    line_color = transit['agency_color']
+            transit['line_color'] = line_color
 
             step['transit'] = transit
         

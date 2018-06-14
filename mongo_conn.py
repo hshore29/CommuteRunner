@@ -34,7 +34,7 @@ def aggregate_commute_steps(work_zip):
                     }
                 },
             "agencies": {"$addToSet": "$commute.steps.transit.agency"},
-            "colors": {"$addToSet": "$commute.steps.transit.color"},
+            "colors": {"$addToSet": "$commute.steps.transit.line_color"},
             "count": {"$sum": 1}
             }
          },
