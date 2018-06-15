@@ -13,6 +13,23 @@ var color, stroke, projection, path, zoom, bounds,
 // Set Color Scale Options
 var D3_BLUE = ['#FFF', '#3182bd'];
 
+// Set number format options
+function pick_format(key) {
+  switch (key) {
+    case 'num':
+      return d3.format(',f');
+    case 'dec':
+      return d3.format(',.1f');
+    case 'pct':
+      return d3.format(',.1%');
+    case 'min':
+      f = d3.format(',.1f');
+      return s => f(s) + ' min';
+    default:
+      return s => s;
+  }
+}
+
 // Setup basic D3 structures
 function initializeMap() {
   // Define Scales
@@ -121,7 +138,7 @@ function drawMap(data) {
 
 function colorZips(data, continuous, format, colors, max_domain) {
   if (!data) { return false; }
-  format = d3.format(format || " ");
+  format = pick_format(format);
   if (continuous) {
     domain = d3.extent(Object.keys(data).map(k => data[k]));
     if (max_domain) { domain[1] = max_domain; }
@@ -171,7 +188,7 @@ function addData(element, work_zip, format) {
 // Draw commute data
 function drawCommute(work_zip) {
   d3.json("/commutes/times/" + work_zip, function (data) {
-    colorZips(data, true, ",.1f", D3_BLUE, 60);
+    colorZips(data, true, "min", D3_BLUE, 60);
   });
   d3.json("/commutes/lines/" + work_zip, function (data) {
     legs_layer.selectAll("path").remove();
