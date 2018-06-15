@@ -16,7 +16,6 @@ var D3_BLUE = ['#FFF', '#3182bd'];
 // Setup basic D3 structures
 function initializeMap() {
   // Define Scales
-  color = d3.scale.category20();
   stroke = function (d, i) {
     return 1 / zoom_levels[zoom_index];
   }
@@ -109,18 +108,20 @@ function drawMap(data) {
     .data(topojson.feature(data, data.objects.zcta).features)
     .enter().append("path")
       .attr("class", "zip")
-      .attr("fill", (d, i) => color(d.properties.COUNTY))
       .attr("d", path)
       .on("mouseover", zipMouseOver);
+  colorZipsMetadata('lookup:COUNTY');
 
   function zipMouseOver(d, i) {
     d3.select("#zip-name").text(d.properties.ZCTA5);
     d3.select("#zip-place").text(d.properties.PLACE || d.properties.COUNTY + ", " + d.properties.STATE);
+    d3.select("#zip-data").text(d.properties.data_label || "");
   }
 }
 
-function colorZips(data, continuous, colors, max_domain) {
+function colorZips(data, continuous, format, colors, max_domain) {
   if (!data) { return false; }
+  format = d3.format(format || " ");
   if (continuous) {
     domain = d3.extent(Object.keys(data).map(k => data[k]));
     if (max_domain) { domain[1] = max_domain; }
@@ -131,10 +132,13 @@ function colorZips(data, continuous, colors, max_domain) {
   zips_layer.selectAll("path").attr("fill", d => {
     val = data[d.properties.ZCTA5];
     if (val === undefined) {
+      d.properties.data_label = null;
       return "#FFF";
     } else if (val === null) {
+      d.properties.data_label = 'None';
       return "#CCC";
     } else {
+      d.properties.data_label = format(val);
       return color(val);
     }
   });
@@ -146,19 +150,20 @@ function colorZipsMetadata(lookup) {
   zips_layer.selectAll("path").attr("fill", d => {
     val = d.properties[lookup[1]];
     val = (lookup.length == 3) ? val.slice(0, lookup[2]) : val;
+    d.properties.data_label = val;
     return color(val);
   });
 }
 
 // Add ZIP data layer
-function addData(element, work_zip) {
+function addData(element, work_zip, format) {
   if (!element) {
     drawCommute(work_zip);
   } else if (element.startsWith('lookup')) {
     colorZipsMetadata(element);
   } else {
     d3.json("/data/" + element, function (data) {
-      colorZips(data, true, D3_BLUE);
+      colorZips(data, true, format, D3_BLUE);
     });
   }
 }
@@ -166,7 +171,7 @@ function addData(element, work_zip) {
 // Draw commute data
 function drawCommute(work_zip) {
   d3.json("/commutes/times/" + work_zip, function (data) {
-    colorZips(data, true, D3_BLUE, 5000);
+    colorZips(data, true, ",.1f", D3_BLUE, 60);
   });
   d3.json("/commutes/lines/" + work_zip, function (data) {
     legs_layer.selectAll("path").remove();

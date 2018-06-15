@@ -102,7 +102,7 @@ def parse_directions(api_response):
     if 'arrival_time' in route:
         overview['arrival_time'] = route['arrival_time']['value']
         overview['departure_time'] = route['departure_time']['value']
-    overview['duration'] = route['duration']['value']
+    overview['duration'] = route['duration']['value'] / 60
     overview['startend'] = [
         [route['start_location']['lng'], route['start_location']['lat']],
         [route['end_location']['lng'], route['end_location']['lat']]
@@ -119,7 +119,7 @@ def parse_directions(api_response):
 
         # Common attributes
         step['travel_mode'] = s['travel_mode']
-        step['duration'] = s['duration']['value']
+        step['duration'] = s['duration']['value'] / 60
         step['description'] = s['html_instructions']
         step['polyline'] = s['polyline']['points']
         step['startend'] = [
@@ -199,7 +199,7 @@ def parse_directions(api_response):
     # Remove the steps and override the duration to 7 minutes
     if data['overview']['duration'] == 0:
         data['steps'] = list()
-        data['overview']['duration'] = (7 * 60)
+        data['overview']['duration'] = 7
 
     # If the commute includes a transit agency without detailed routes,
     # remove the steps (but keep summary stats)

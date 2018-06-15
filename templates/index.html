@@ -25,9 +25,20 @@
       font-size: 7pt;
       text-transform: uppercase;
     }
+    .widget-subtitle {
+      float: right;
+      font-weight: 200;
+      line-height: 1.6;
+      padding-bottom: 2px;
+      max-width: 60%;
+    }
 
     .zip-label {
       right: 25px; bottom: 25px;
+      width: 150px;
+    }
+    #zip-name {
+      font-size: 16pt;
     }
     .layer-filter {
       right: 25px; top: 25px;
@@ -66,6 +77,7 @@
     <div class="zoom-button" data-zoom="-">–</div>
   </div>
   <div class="widget zip-label">
+    <div id="zip-data" class="widget-subtitle">New York</div>
     <div id="zip-name" class="widget-title">10001</div>
     <div id="zip-place" class="widget-item">New York, NY</div>
   </div>
@@ -77,12 +89,12 @@
     <div class="widget-title">Zip Data Sets</div>
     <div class="widget-item data-button selected" data-element="lookup:COUNTY">ZIP County</div>
     <div class="widget-item data-button" data-element="lookup:ZCTA5:3">ZIP Prefix (3)</div>
-    <div class="widget-item data-button" data-element="means_car">% Driving</div>
-    <div class="widget-item data-button" data-element="means_transit">% using Transit</div>
-    <div class="widget-item data-button" data-element="means_walk">% Walking</div>
-    <div class="widget-item data-button" data-element="travel_time">Average Commute</div>
-    <div class="widget-item data-button" data-element="emp">Employment</div>
-    <div class="widget-item data-button" data-element="workers">Population</div>
+    <div class="widget-item data-button" data-element="means_car" data-format=",.1%">% Driving</div>
+    <div class="widget-item data-button" data-element="means_transit" data-format=",.1%">% using Transit</div>
+    <div class="widget-item data-button" data-element="means_walk" data-format=",.1%">% Walking</div>
+    <div class="widget-item data-button" data-element="travel_time" data-format=",.1f">Average Commute</div>
+    <div class="widget-item data-button" data-element="emp" data-format=",f">Employment</div>
+    <div class="widget-item data-button" data-element="workers" data-format=",f">Population</div>
     <hr />
     <div class="widget-title">Commutes</div>
     <div class="widget-item data-button" data-work-zip="10036">10036</div>
@@ -100,7 +112,7 @@
     $(".data-button").click(function () {
       $(".data-button").removeClass("selected");
       $(this).addClass("selected");
-      addData($(this).data("element"), $(this).data("work-zip"));
+      addData($(this).data("element"), $(this).data("work-zip"), $(this).data("format"));
     });
     $(".zoom-button").click(function () {
       if (!$(this).hasClass("disabled")) {
