@@ -30,7 +30,10 @@ def get_commute_lines(work_zip):
     for d in docs:
         polyline = d.pop('polyline')
         startend = d.pop('startend')
-        coords = unpolyline(polyline) if d['mode'] == 'TRANSIT' else startend
+        if d['mode'] in ('TRANSIT', 'WALKING_ONLY'):
+            coords = unpolyline(polyline)
+        else:
+            coords = startend
         d['geo'] = {'type': 'LineString', 'coordinates': coords}
 
     return jsonify(docs)

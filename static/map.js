@@ -7,7 +7,7 @@ var margin = {top: 8, bottom: 10, left: 8, right: 8},
     zoom_index = 3;
 
 // D3 Variables defined during map creation
-var color, stroke, projection, path, zoom, bounds,
+var color, stroke, dashes, projection, path, zoom, bounds,
     svg, zoombox, background, zips_layer, legs_layer;
 
 // Set Color Scale Options
@@ -35,6 +35,14 @@ function initializeMap() {
   // Define Scales
   stroke = function (d, i) {
     return 1 / zoom_levels[zoom_index];
+  }
+  dashes = function (d, i) {
+    if (d.mode.startsWith('WALKING')) {
+      dash = 2 / zoom_levels[zoom_index];
+      return dash + ',' + dash;
+    } else {
+      return null
+    }
   }
 
   projection = d3.geo.albers()
@@ -92,7 +100,10 @@ function zoomed(trans) {
   zoom.translate(trans);
   
   // Update zoombox
-  if (s1 != s2) { legs_layer.selectAll("path").attr("stroke-width", stroke); }
+  if (s1 != s2) {
+    legs_layer.selectAll("path").attr("stroke-width", stroke);
+    legs_layer.selectAll("path").attr("stroke-dasharray", dashes);
+  }
   zoombox.attr("transform", "translate(" + trans + ")scale(" + s2 + ")");
 }
 
@@ -197,7 +208,7 @@ function drawCommute(work_zip) {
       .attr("fill", "none")
       .attr("stroke", d => d.colors[0] || "#AAA")
       .attr("stroke-width", stroke)
-      .attr("stroke-dasharray", d => (d.mode == 'WALKING') ? "2,2" : null)
+      .attr("stroke-dasharray", dashes)
       .attr("d", d => path(d.geo));
   });
 }

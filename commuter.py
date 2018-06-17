@@ -188,7 +188,7 @@ def parse_directions(api_response):
     # If the commute is all walking, consolidate steps
     if data['overview']['step_modes'] == 'WALKING':
         data['steps'] = [{
-            'travel_mode': 'WALKING',
+            'travel_mode': 'WALKING_ONLY',
             'duration': data['overview']['duration'],
             'polyline': data['overview']['polyline'],
             'startend': data['overview']['startend'],
