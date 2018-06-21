@@ -6,9 +6,9 @@ import json
 
 from google_apis import API_KEY
 from transit_mapping import *
-MAPS_URL = 'https://maps.googleapis.com/maps/api/directions/json'
+MAPS_URL = 'https://maps.googleapis.com/maps/api/'
 
-# API Allowed inputs
+# Directions API Allowed inputs
 MODES = ['driving', 'transit', 'walking', 'bicycling']
 TRANSIT_MODES = ['bus', 'subway', 'train', 'tram', 'rail']
 TRANSIT_PREFS = ['less_walking', 'fewer_transfers']
@@ -28,7 +28,7 @@ def utc_timestamp(hour, minutes):
     today = today + timedelta(days=delta)
     return today.strftime('%s')
 
-def call_api(origin, destination, mode='driving', **kwargs):
+def call_directions_api(origin, destination, mode='driving', **kwargs):
     # Unused API Parameters
     # alternatives: defaults to False
     # waypoints: pipe-separated list of waypoints
@@ -76,7 +76,7 @@ def call_api(origin, destination, mode='driving', **kwargs):
             args['transit_routing_preference'] = transit_pref
 
     # Request route
-    r = requests.get(MAPS_URL, params=args)
+    r = requests.get(MAPS_URL + 'directions/json', params=args)
     return r.json()
 
 def parse_directions(api_response):
@@ -210,13 +210,54 @@ def parse_directions(api_response):
 
     return data
 
+def populate_zipcode_latlon(zip_code):
+    # Get geocoding from MongoDB
+    doc = mongodb.geocoding.find_one({'_id': zip_code})
+
+    # If there wasn't one, call the API
+    if not doc or 'google' not in doc:
+        _id = {'_id': zip_code}
+        doc = doc or _id
+        args = {
+            'key': API_KEY,
+            'address': zip_code,
+            }
+        r = requests.get(MAPS_URL + 'geocode/json', params=args)
+        data = r.json()
+        if data['status'] == 'OK':
+            doc['google'] = {
+                'lat': data['results'][0]['geometry']['location']['lat'],
+                'lng': data['results'][0]['geometry']['location']['lng']
+                }
+            mongodb.geocoding.replace_one(_id, doc, True)
+
+    return doc
+
+def get_zipcode_latlon(zip_code):
+    # Get geocoding from MongoDB
+    doc = mongodb.geocoding.find_one({'_id': zip_code})
+    if doc is None:
+        raise Exception('Missing zip code: ' + zip_code)
+    geo = doc.get('custom', doc.get('centroid', doc['google']))
+    return str(geo['lat']) + ',' + str(geo['lng'])
+
+def skip_zip(zip_code):
+    if zip_code[0] not in ('0', '1'):
+        return True
+    if zip_code[0:2] not in ('06', '07', '08', '10', '11', '12', '18', '19'):
+        return True
+    if zip_code[0:3] in ('120', '121', '122', '123', '128', '129', '197',
+                         '198', '199'):
+        return True
+    return False
+
 def get_directions(work_zip):
     # Get list of zip pairs from DB
     cur.execute("""
         select ZCTA5, RESIDENCE_ZIP
         from ZIP_DATA d
           join ZIP_WEIGHTS w on d.FIPS_CODE = w.PLACE_OF_WORK_CODE
-        where d.ZCTA5 = '%s' and (WEIGHT*EMP) >= 5
+        where d.ZCTA5 = '%s' and (WEIGHT*EMP) >= 1
         order by WEIGHT*EMP desc""" % work_zip)
     home_zips = [z[1] for z in cur.fetchall()]
 
@@ -235,15 +276,17 @@ def get_directions(work_zip):
     for k in keys:
         if col.find_one({'_id': k}):
             continue
+        if skip_zip(k['start']):
+            continue
         args = {
-            'origin': k['start'],
-            'destination': k['end'],
+            'origin': get_zipcode_latlon(k['start']),
+            'destination': get_zipcode_latlon(k['end']),
             'arrival_time': utc_timestamp(*k['arrive_by']),
             }
         if k['mode'] == 'transit':
             args['mode'] = 'transit'
             args['transit_mode'] = ['fewer_transfers']
-        commute = call_api(**args)
+        commute = call_directions_api(**args)
         col.insert_one({'_id': k, 'response': commute})
 
 def clean_directions():

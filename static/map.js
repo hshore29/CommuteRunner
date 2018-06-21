@@ -8,7 +8,7 @@ var margin = {top: 8, bottom: 10, left: 8, right: 8},
 
 // D3 Variables defined during map creation
 var color, stroke, dashes, projection, path, zoom, bounds,
-    svg, zoombox, background, zips_layer, legs_layer;
+    svg, zoombox, background, zips_layer, legs_layer, dots_layer;
 
 // Set Color Scale Options
 var D3_BLUE = ['#FFF', '#3182bd'];
@@ -75,6 +75,7 @@ function initializeMap() {
 
   background = zoombox.append("g").attr("class", "background-layer");
   zips_layer = zoombox.append("g").attr("class", "zips-layer");
+  dots_layer = zoombox.append("g").attr("class", "dots-layer");
   legs_layer = zoombox.append("g").attr("class", "legs-layer");
 
   zoom = d3.behavior.zoom()
@@ -145,6 +146,17 @@ function drawMap(data) {
     d3.select("#zip-place").text(d.properties.PLACE || d.properties.COUNTY + ", " + d.properties.STATE);
     d3.select("#zip-data").text(d.properties.data_label || "");
   }
+}
+
+function drawDots(data) {
+  dots_layer.selectAll("circle")
+    .data(data)
+    .enter().append("circle")
+      .attr("cx", d => projection([(d.custom || d.centroid || d.google).lng, (d.custom || d.centroid || d.google).lat])[0])
+      .attr("cy", d => projection([(d.custom || d.centroid || d.google).lng, (d.custom || d.centroid || d.google).lat])[1])
+      .attr("r", 2)
+      .attr("fill", D3_BLUE[1])
+      .attr("data-zcta", d => d._id);
 }
 
 function colorZips(data, continuous, format, colors, max_domain) {
