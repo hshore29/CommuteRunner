@@ -8,7 +8,7 @@ var margin = {top: 8, bottom: 10, left: 8, right: 8},
 
 // D3 Variables defined during map creation
 var color, stroke, dashes, projection, path, zoom, bounds,
-    svg, zoombox, background, zips_layer, legs_layer, dots_layer;
+    svg, zoombox, background, zips_layer, path_layer, legs_layer, dots_layer;
 
 // Set Color Scale Options
 var D3_BLUE = ['#FFF', '#3182bd'];
@@ -76,6 +76,7 @@ function initializeMap() {
   background = zoombox.append("g").attr("class", "background-layer");
   zips_layer = zoombox.append("g").attr("class", "zips-layer");
   dots_layer = zoombox.append("g").attr("class", "dots-layer");
+  path_layer = zoombox.append("g").attr("class", "path-layer");
   legs_layer = zoombox.append("g").attr("class", "legs-layer");
 
   zoom = d3.behavior.zoom()
@@ -102,6 +103,7 @@ function zoomed(trans) {
   
   // Update zoombox
   if (s1 != s2) {
+    path_layer.selectAll("path").attr("stroke-width", stroke);
     legs_layer.selectAll("path").attr("stroke-width", stroke);
     legs_layer.selectAll("path").attr("stroke-dasharray", dashes);
   }
@@ -157,6 +159,15 @@ function drawDots(data) {
       .attr("r", 2)
       .attr("fill", D3_BLUE[1])
       .attr("data-zcta", d => d._id);
+}
+
+function drawRoutes(data) {
+  path_layer.selectAll("path").data(data.features)
+    .enter().append("path")
+    .attr("fill", "none")
+    .attr("stroke", d => d.properties.color)
+    .attr("stroke-width", stroke)
+    .attr("d", path);
 }
 
 function colorZips(data, continuous, format, colors, max_domain) {

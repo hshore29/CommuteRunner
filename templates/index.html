@@ -104,7 +104,11 @@
     d3.json("/static/zip_map.json", function (data) {
       drawMap(data);
     });
-    
+
+    d3.json("/static/routes.json", function (data) {
+      drawRoutes(data);
+    });
+
     $("input[type='checkbox']").change(function () {
       $("." + $(this).data('layer-toggle') + "-layer").toggle(this.checked);
     });

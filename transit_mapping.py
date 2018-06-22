@@ -65,10 +65,34 @@ LINE_COLORS = {
         'Pascack Valley Line': '#8E258D',
         'Raritan Valley Line': '#FAA634',
         'Port Jervis Line': '#FF7900', # Metro-North
+        # Light Rail
         'Hudson-Bergen Light Rail': '#FFDD00', # Also '#008C4E', '#009EDA'
         'Newark Light Rail': '#504682', # From logo colors
         'Riverline Light Rail': '#3B97C4', # From NJT Schedule
+        # Other
+        'SEPTA': '#E34528',
+        'Meadowlands Rail Line': '#000',
+        'PATCO Speedline': ' #EF3E42',
         },
+    }
+
+NJT_LINES = {
+    'ATLANTIC CITY RAIL LINE': 'Atlantic City Line',
+    'BERGEN COUNTY LINE': 'Main/Bergen County Line',
+    'MAIN LINE': 'Main/Bergen County Line',
+    'MEADOWLANDS RAIL LINE': 'Meadowlands Rail Line',
+    'MONTCLAIR BOONTON LINE': 'Montclair-Boonton Line',
+    'MORRIS & ESSEX': 'Morris & Essex Line',
+    'NORTH JERSEY COAST LINE': 'North Jersey Coast Line',
+    'NORTHEAST CORRIDOR LINE': 'Northeast Corridor',
+    'PASCACK VALLEY LINE': 'Pascack Valley Line',
+    'PATCO SPEEDLINE': 'PATCO Speedline',
+    'PORT JERVIS LINE': 'Port Jervis Line',
+    'RARITAN VALLEY LINE': 'Raritan Valley Line',
+    'SEPTA': 'SEPTA',
+    'RIVER LINE': 'Riverline Light Rail',
+    'HUDSON BERGEN LIGHT RAIL': 'Hudson-Bergen Light Rail',
+    'NEWARK LIGHT RAIL': 'Newark Light Rail',
     }
 
 MODE_COLORS = {
