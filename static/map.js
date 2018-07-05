@@ -7,8 +7,20 @@ var margin = {top: 8, bottom: 10, left: 8, right: 8},
     zoom_index = 3;
 
 // D3 Variables defined during map creation
-var color, stroke, dashes, projection, path, zoom, bounds,
+var color, projection, path, zoom, bounds,
     svg, zoombox, background, zips_layer, path_layer, legs_layer, dots_layer;
+
+// Define scales
+var stroke = (d, i) => 1 / zoom_levels[zoom_index],
+    opacity = d3.scale.linear().domain([1, 1000]).range([0, 1]),
+    dashes = function (d, i) {
+      if (d.mode.startsWith('WALKING') || d.mode.startsWith('DRIVING')) {
+        dash = 2 / zoom_levels[zoom_index];
+        return dash + ',' + dash;
+      } else {
+        return null
+      }
+    };
 
 // Set Color Scale Options
 var D3_BLUE = ['#FFF', '#3182bd'];
@@ -32,27 +44,13 @@ function pick_format(key) {
 
 // Setup basic D3 structures
 function initializeMap() {
-  // Define Scales
-  stroke = function (d, i) {
-    return 1 / zoom_levels[zoom_index];
-  }
-  dashes = function (d, i) {
-    if (d.mode.startsWith('WALKING')) {
-      dash = 2 / zoom_levels[zoom_index];
-      return dash + ',' + dash;
-    } else {
-      return null
-    }
-  }
-
+  // Define projection and path function
   projection = d3.geo.albers()
     .center([0, 40.7743])
     .rotate([73.971, 0])
     .translate([width/2, height/2])
     .scale(65000);
-
-  path = d3.geo.path()
-    .projection(projection);
+  path = d3.geo.path().projection(projection);
 
   // Define view bounding box
   var bbox_rect = {
@@ -72,15 +70,13 @@ function initializeMap() {
     .append("g");
 
   zoombox = svg.append("g");
-
   background = zoombox.append("g").attr("class", "background-layer");
   zips_layer = zoombox.append("g").attr("class", "zips-layer");
   dots_layer = zoombox.append("g").attr("class", "dots-layer");
   path_layer = zoombox.append("g").attr("class", "path-layer");
   legs_layer = zoombox.append("g").attr("class", "legs-layer");
 
-  zoom = d3.behavior.zoom()
-    .on("zoom", panned);
+  zoom = d3.behavior.zoom().on("zoom", panned);
   svg.call(zoom);
 
   // Draw background
