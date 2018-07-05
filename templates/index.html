@@ -37,7 +37,7 @@
       right: 25px; bottom: 25px;
       width: 150px;
     }
-    #zip-name {
+    #zip-name, #summary-data {
       font-size: 16pt;
     }
     .layer-filter {
@@ -46,6 +46,9 @@
     .zoom-box {
       left: 25px; bottom: 25px;
       min-width: 0px; padding: 0px;
+    }
+    .summary-box {
+      left: 50%; bottom: 25px;
     }
     .data-button {
       padding: 4px;
@@ -72,6 +75,10 @@
   </style>
 </head>
 <body>
+  <div class="widget summary-box" style="display: none;">
+    <div id="summary-data" class="widget-title"></div>
+    <div class="widget-item">Avg. Commute to <span id="summary-zip"></span></div>
+  </div>
   <div class="widget zoom-box">
     <div class="zoom-button" data-zoom="+">+</div>
     <div class="zoom-button" data-zoom="-">–</div>

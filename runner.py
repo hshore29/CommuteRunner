@@ -20,9 +20,11 @@ def get_data(element):
 
 @app.route('/commutes/times/<work_zip>')
 def get_commute_times(work_zip):
-    docs = M.aggregate_commute_times(work_zip)
+    docs = list(M.aggregate_commute_times(work_zip))
     zips = {z['zip']: z['duration'] for z in docs}
-    return jsonify(zips)
+    total = sum([z['weight']*z['duration'] for z in docs]) /\
+            sum([z['duration'] for z in docs])
+    return jsonify({'zips': zips, 'total': total})
 
 @app.route('/commutes/lines/<work_zip>')
 def get_commute_lines(work_zip):

@@ -209,6 +209,7 @@ function colorZipsMetadata(lookup) {
 
 // Add ZIP data layer
 function addData(element, work_zip, format) {
+  $(".summary-box").hide();
   if (!element) {
     drawCommute(work_zip);
   } else if (element.startsWith('lookup')) {
@@ -223,7 +224,10 @@ function addData(element, work_zip, format) {
 // Draw commute data
 function drawCommute(work_zip) {
   d3.json("/commutes/times/" + work_zip, function (data) {
-    colorZips(data, true, "min", D3_BLUE, 60);
+    colorZips(data.zips, true, "min", D3_BLUE, 60);
+    $("#summary-data").text(pick_format('min')(data.total));
+    $("#summary-zip").text(work_zip);
+    $(".summary-box").show();
   });
   d3.json("/commutes/lines/" + work_zip, function (data) {
     legs_layer.selectAll("path").remove();
