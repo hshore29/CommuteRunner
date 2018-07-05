@@ -182,6 +182,7 @@ function colorZips(data, continuous, format, colors, max_domain) {
   }
   zips_layer.selectAll("path").attr("fill", d => {
     val = data[d.properties.ZCTA5];
+    d.properties.data = val;
     if (val === undefined) {
       d.properties.data_label = null;
       return "#FFF";
@@ -232,6 +233,7 @@ function drawCommute(work_zip) {
       .attr("stroke", d => d.colors[0] || "#AAA")
       .attr("stroke-width", stroke)
       .attr("stroke-dasharray", dashes)
+      .attr("opacity", d => opacity(d.weight))
       .attr("d", d => path(d.geo));
   });
 }

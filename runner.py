@@ -30,7 +30,7 @@ def get_commute_lines(work_zip):
     for d in docs:
         polyline = d.pop('polyline')
         startend = d.pop('startend')
-        if d['mode'] in ('TRANSIT', 'WALKING_ONLY'):
+        if d['mode'] in ('TRANSIT', 'DRIVING_ONLY', 'WALKING_ONLY'):
             coords = unpolyline(polyline)
         else:
             coords = startend
