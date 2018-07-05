@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://d3js.org/d3.v3.min.js"></script>
-  <script src="https://d3js.org/topojson.v1.min.js"></script>
+  <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script-->
+  <!--script src="https://d3js.org/d3.v3.min.js"></script-->
+  <!--script src="https://d3js.org/topojson.v1.min.js"></script-->
+  <script src="/static/jquery.min.js"></script>
+  <script src="/static/d3.v3.min.js"></script>
+  <script src="/static/topojson.v1.min.js"></script>
   <script src="/static/map.js"></script>
   <style>
     body {
@@ -91,6 +94,7 @@
   <div class="widget layer-filter">
     <div class="widget-title">Layers</div>
     <div class="widget-item"><input type="checkbox" data-layer-toggle="legs" checked /> Commutes</div>
+    <div class="widget-item"><input type="checkbox" data-layer-toggle="path" checked /> Rail Lines</div>
     <div class="widget-item"><input type="checkbox" data-layer-toggle="zips" checked /> Zip Code Data</div>
     <hr />
     <div class="widget-title">Zip Data Sets</div>
